@@ -18,15 +18,18 @@ app.get('/test', (req, res) => res.send('Hello World!'));
 
 app.post('/measurements', (req, res) => {
 	const data = res.body;
-	// insert data into SQL (dbClient)
+    dbClient.query('INSERT * FROM measurement', (err, res) => {
+        console.log(res.fields);
+        console.log(res.rows);
+    });
+});
+
+app.get("/measurements", (req, res) => {
+    dbClient.query('SELECT * FROM measurement', (dbErr, dbRes) => {
+        res.send(dbRes.rows);
+    });
 });
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
 
 
-
-dbClient.query('SELECT * FROM measurement', (err, res) => {
-  console.log(res.fields);
-  console.log(res.rows);
-  dbClient.end();
-});
