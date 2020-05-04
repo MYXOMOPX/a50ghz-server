@@ -1,4 +1,4 @@
-const { Pool, Client } = require('pg')
+const { Pool, Client } = require('pg');
 
 const client = new Client({
   user: 'a50ghz_user',
@@ -6,7 +6,7 @@ const client = new Client({
   database: 'a50ghz',
   password: 'magic_measurements',
   port: 10433,
-})
+});
 client.connect();
 
-module.exports = client
+module.exports = client;
