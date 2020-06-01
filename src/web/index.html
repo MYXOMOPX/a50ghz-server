@@ -1,7 +1,78 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Hello, I'm html file!
-	</body>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>My CourseWork</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+        integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+        crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+          integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+          crossorigin=""></script>
+  <script src="../Leaflet/leaflet-isolines.js"></script>
+  <link rel="stylesheet" href="../Leaflet/leaflet-isolines.css"/>
+  <script type="text/javascript" src="../JQuery/jquery.min.js"></script>
+  <style>
+    #map {
+	  height: 96vh;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+	<div id="loader"></div>
+	<div id="map"></div>
+	<script>
+		function FindMedian(){
+		
+		}
+		var samples = []
+		var NumMed
+		$.ajax({
+			url: 'http://localhost:3000/measurements',
+			type: 'get',
+			datatype: 'json',
+			success: function(data) {  
+				for(var i=0;i<data.rows.length;i++){
+					samples[i] = [3]
+					samples[i][0]=data.rows[i].location.x
+					samples[i][1]=data.rows[i].location.y
+					
+					data.rows[i].data.sort(function(a, b){return a - b});
+					if(data.rows[i].data.length%2==1){
+						samples[i][2] = data.rows[i].data[(data.rows[i].data.length + 1)/2-1]
+					} else {
+						samples[i][2] = (data.rows[i].data[data.rows[i].data.length/2-1]
+						+data.rows[i].data[data.rows[i].data.length/2])/2
+					}
+				}
+				console.log(samples)
+				console.log(data.rows)
+			}
+		});
+		var breaks = [ 2, 3, 400.5]
+		var bounds = []
+
+		var map = L.map('map').setView([54.734773, 55.957829], 10);
+		L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+		let mapBounds = map.getBounds()
+		for (var key in mapBounds) {
+			if (mapBounds[key].lat) {
+			  bounds.push([mapBounds[key].lat, mapBounds[key].lng])
+			}
+		}
+		var isoline = L.leafletIsolines(samples, breaks, {
+			bounds: bounds
+		})
+		isoline.addTo(map)
+		  
+
+	</script>
+</body>
+
 </html>

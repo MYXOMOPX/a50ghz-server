@@ -16,17 +16,23 @@ app.use('/', express.static('./src/web'));
 
 app.get('/test', (req, res) => res.send('Hello World!'));
 
+
+const getQuery = (data) => ({
+    text: 'INSERT INTO measurement(location, data, time) VALUES($1, $2, $3)',
+    values: ['('+data.geolocation.latitude+','+data.geolocation.longitude+')', data.measures, data.timestamp]
+});
+
 app.post('/measurements', (req, res) => {
-	const data = res.body;
-    dbClient.query('INSERT * FROM measurement', (err, res) => {
-        console.log(res.fields);
-        console.log(res.rows);
+	const data = req.body;
+    console.log(data);
+    dbClient.query(getQuery(data),(SQLerr, SQLres) => {
+        res.send(SQLerr);
     });
 });
 
 app.get("/measurements", (req, res) => {
-    dbClient.query('SELECT * FROM measurement', (dbErr, dbRes) => {
-        res.send(dbRes.rows);
+    dbClient.query('SELECT location, data FROM measurement', (dbErr, dbRes) => {
+        res.send(dbRes);
     });
 });
 
