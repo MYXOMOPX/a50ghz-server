@@ -34,7 +34,7 @@ app.post('/measurements', (req, res) => {
 
 app.get("/measurements", (req, res) => {
     dbClient.query('SELECT location, data FROM measurement', (dbErr, dbRes) => {
-        res.send(dbRes);
+        res.send(dbRes.rows);
     });
 });
 
