@@ -18,7 +18,7 @@ app.get('/test', (req, res) => res.send('Hello World!'));
 
 
 const getQuery = (data) => ({
-    text: 'INSERT INTO measurement(location, data, time) VALUES($1, $2, $3)',
+    text: 'INSERT INTO measurement(location, data, time) VALUES($1, $2, TO_TIMESTAMP($3::double precision / 1000))',
     values: ['('+data.geolocation.latitude+','+data.geolocation.longitude+')', data.measures, data.timestamp]
 });
 
@@ -26,7 +26,9 @@ app.post('/measurements', (req, res) => {
 	const data = req.body;
     console.log(data);
     dbClient.query(getQuery(data),(SQLerr, SQLres) => {
-        res.send(SQLerr);
+        console.log(data.timestamp)
+        if (SQLerr) console.log("ERROR", SQLerr);
+        res.send(SQLres);
     });
 });
 
