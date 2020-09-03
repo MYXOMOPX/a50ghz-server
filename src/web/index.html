@@ -37,6 +37,8 @@
 			type: 'get',
 			datatype: 'json',
 			success: function(data) {  
+				var max=0;
+				var min=1000;
 				for(var i=0;i<data.length;i++){
 					samples[i] = [];
 					samples[i][0]=data[i].location.x;
@@ -44,38 +46,42 @@
 					
 					data[i].data.sort(function(a, b){return a - b});
 					if(data[i].data.length%2===1){
-						samples[i][2] = data[i].data[(data[i].data.length + 1)/2-1];
+						samples[i][2] = Math.round(data[i].data[(data[i].data.length + 1)/2-1]);
 					} else {
-						samples[i][2] = (data[i].data[data[i].data.length/2-1]+data[i].data[data[i].data.length/2])/2;
+						samples[i][2] = Math.round((data[i].data[data[i].data.length/2-1]+
+						data[i].data[data[i].data.length/2])/2);
+					}
+					if(samples[i][2]>= max){
+						max=samples[i][2]
+					} else if(samples[i][2]<= min){
+						min=samples[i][2]
 					}
 				}
-				console.log(samples);
-				console.log(data);
-                buildIsolines(samples);
+				var breaks = [ ];
+				for(var i=min,j=0;i<=max;i++,j++){
+					breaks[j]=i
+				}
+                buildIsolines(samples, breaks);
 			}
 		});
-		var breaks = [ 2, 3, 400.5];
-		var bounds = [];
-
-		var map = L.map('map').setView([54.734773, 55.957829], 10);
+		
+		var map = L.map('map').setView([61.25974573,73.24256256], 18);
 		L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-		let mapBounds = map.getBounds();
-		for (var key in mapBounds) {
-			if (mapBounds[key].lat) {
-			  bounds.push([mapBounds[key].lat, mapBounds[key].lng]);
+		
+		function buildIsolines(smpls,breaks) {
+			var bounds = [];
+			let mapBounds = map.getBounds();
+			for (var key in mapBounds) {
+				if (mapBounds[key].lat) {
+				  bounds.push([mapBounds[key].lat, mapBounds[key].lng]);
+				}
 			}
-		}
-		function buildIsolines(smpls) {
-            var isoline = L.leafletIsolines(smpls, breaks, {
-                bounds: bounds
-            });
-            isoline.addTo(map);
+			
+			var isoline = L.leafletIsolines(smpls, breaks, {
+				bounds: bounds
+			});
+			isoline.addTo(map);
         }
-
-		  
-
 	</script>
 </body>
-
 </html>

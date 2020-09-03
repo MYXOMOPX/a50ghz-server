@@ -3,7 +3,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
-
 const port = 3000;
 
 // parse application/x-www-form-urlencoded
@@ -13,9 +12,7 @@ app.use(bodyParser.json());
 // static files
 app.use('/', express.static('./src/web'));
 
-
 app.get('/test', (req, res) => res.send('Hello World!'));
-
 
 const getQuery = (data) => ({
     text: 'INSERT INTO measurement(location, data, time) VALUES($1, $2, TO_TIMESTAMP($3::double precision / 1000))',
